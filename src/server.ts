@@ -7,6 +7,7 @@ import createSession from "./routes/createSession";
 import getSession from "./routes/getSession";
 import strokeRoutes from "./routes/strokeRoutes";
 import { prisma } from "./config/prismaClient";
+import saveUser from './routes/saveUser'
 
 import fabric from 'fabric'
 
@@ -15,13 +16,15 @@ import fabric from 'fabric'
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server }); 
+const wss = new WebSocketServer({ server });
 const PORT = 5000;
 
-app.use(cors());
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(express.json());
 
-app.use("/api/createSession",createSession );
+app.use("/api/saveUser", saveUser)
+
+app.use("/api/createSession", createSession);
 app.use("/api/stroke", strokeRoutes);
 app.use("/api/getSession", getSession);
 
