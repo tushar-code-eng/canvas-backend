@@ -1,15 +1,23 @@
 import express from "express";
 import { prisma } from "../config/prismaClient";
-import { v4 as uuidv4 } from "uuid";
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", async (req: any, res: any) => {
     try {
-        const { url,hostId } = req.body;
-        
+        const { hostId, sessionId } = req.body;
+
+        //Can get the existing session from redis
+        const existingSession = await prisma.session.findUnique({
+            where: { sessionId }
+        });
+
+        if (existingSession) {
+            return res.status(200).json(existingSession);
+        }
+
         const session = await prisma.session.create({
-            data: { url, hostId }
+            data: { sessionId, hostId }
         });
 
         res.status(201).json(session);

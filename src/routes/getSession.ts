@@ -4,11 +4,12 @@ import { prisma } from "../config/prismaClient";
 const router = express.Router();
 
 router.get("/", async (req: any, res: any) => {
-    try {
-        const url = "http://localhost:5000"
-        
+
+    const { sessionId } = req.query
+
+    try { 
         const session = await prisma.session.findUnique({
-            where: { url },
+            where: { sessionId },
             include: { strokes: true },
         });
 

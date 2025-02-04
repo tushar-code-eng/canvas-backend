@@ -9,25 +9,28 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  userId    String   @unique
+  id        String          @id @default(cuid())
+  userId    String          @unique
   FullName  String
-  email     String   @unique
+  email     String          @unique
   image     String
-  password  String   @default("No Password")
-  Canvases  String[] @default([])
+  password  String          @default("No Password")
+  Canvases  String[]        @default([])
   isGoogle  Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  cursor    CursorPosition?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
-  url       String   @unique
+  id        Int              @id @default(autoincrement())
+  sessionId String           @unique
   hostId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
   strokes   Stroke[]
+  cursors   CursorPosition[]
+  guests    String[]         @default([])
 }
 
 model Stroke {
@@ -38,4 +41,15 @@ model Stroke {
   sessionId  Int
   session    Session  @relation(fields: [sessionId], references: [id])
   strokeData Json
+}
+
+model CursorPosition {
+  id        Int      @id @default(autoincrement())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  sessionId Int
+  session   Session  @relation(fields: [sessionId], references: [id])
+  x         Float
+  y         Float
+  updatedAt DateTime @updatedAt
 }
