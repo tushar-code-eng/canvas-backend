@@ -24,13 +24,23 @@ model User {
 
 model Session {
   id        Int              @id @default(autoincrement())
+  title     String?
   sessionId String           @unique
   hostId    String
+  type      sessionEnum?
+  data      Json             @default("{}")
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   strokes   Stroke[]
   cursors   CursorPosition[]
   guests    String[]         @default([])
+}
+
+enum sessionEnum {
+  Flowchart
+  Desgin
+  Wireframe
+  Custom
 }
 
 model Stroke {

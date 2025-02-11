@@ -5,9 +5,18 @@ import { WebSocketServer } from "ws"; // Import ws
 import { createClient } from "redis"; // Import Redis client
 import createSession from "./routes/createSession";
 import getSession from "./routes/getSession";
+import getRecentSessions from "./routes/dashboard/getRecentSessions"
+import setCanvasRedis from './routes/saveCanvasRedis'
 // import strokeRoutes from "./routes/strokeRoutes";
 import { prisma } from "./config/prismaClient";
 import saveUser from './routes/saveUser'
+
+import Redis from 'ioredis'
+
+const redis = new Redis({
+    host:"localhost",
+    port:6379,
+}); // Connects to Redis
 
 import fabric from 'fabric'
 
@@ -27,6 +36,22 @@ app.use("/api/saveUser", saveUser)
 app.use("/api/createSession", createSession);
 // app.use("/api/stroke", strokeRoutes);
 app.use("/api/getSession", getSession);
+app.use("/api/getRecentSessions",getRecentSessions)
+app.use("/api/saveCanvasRedis",setCanvasRedis)
+
+app.get("/get-canvas", async (req, res) => {
+  try {
+    const canvasData = await redis.get("canvas_state");
+    if (canvasData) {
+      res.json({ canvasData: JSON.parse(canvasData) });
+    } else {
+      res.status(404).json({ error: "Canvas data not found" });
+    }
+  } catch (error) {
+    console.error("Redis Error:", error);
+    res.status(500).json({ error: "Failed to retrieve canvas data" });
+  }
+});
 
 // const pubSubChannel = "canvas-updates"; 
 // redisClient.subscribe(pubSubChannel, (message) => {

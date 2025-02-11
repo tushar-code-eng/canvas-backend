@@ -17,7 +17,7 @@ router.post("/", async (req: any, res: any) => {
         }
 
         const session = await prisma.session.create({
-            data: { sessionId, hostId }
+            data: { sessionId, hostId, }
         });
 
         res.status(201).json(session);
